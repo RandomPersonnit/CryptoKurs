@@ -15,15 +15,15 @@ class CryptoModule(loader.Module):
         """Получает текущий курс биткоина"""
         currency = message.pattern_match.group(1)
 
-        if currency == "₽":
+        if currency == "rub":
             course = random.randint(1000000, 2000000)  # Пример генерации случайного курса в рублях
             text = f"<b>На данный момент, курс 1 BTC составляет </b><code>{course}₽</code>"
 
-        elif currency == "$":
+        elif currency == "usd":
             course = random.uniform(15000, 25000)  # Пример генерации случайного курса в долларах
             text = f"<b>На данный момент, курс 1 BTC составляет </b><code>{course}$</code>"
 
         else:
-            text = "<b>Неверный формат валюты, используйте ₽ или $</b>"
+            text = "<b>Неверный формат валюты, используйте rub или usd</b>"
 
         await utils.answer(message, text)
