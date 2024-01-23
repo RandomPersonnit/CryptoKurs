@@ -1,10 +1,4 @@
-import asyncio
 import requests
-
-from hikkatl import types
-from telethon import functions, events
-
-from .. import loader, utils
 
 @loader.unrestricted
 async def btccmd(self, message: types.Message):
