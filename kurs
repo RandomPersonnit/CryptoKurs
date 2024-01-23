@@ -1,7 +1,14 @@
+import asyncio
 import requests
 
-@loader.unrestricted
-async def btccmd(self, message: types.Message):
+from hikkatl import types
+from telethon import functions, events
+
+from .. import loader, utils
+
+
+@loader.tds
+class SendMessageModule(loader.Module):
     """Получает текущий курс биткоина"""
     currency = utils.get_args_raw(message)
 
