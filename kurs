@@ -19,8 +19,20 @@ class IDModule(loader.Module):
     async def idcmd(self, message):
         """Используй: .id @username/реплай на сообщение"""
         
-        # Код получения пользователя такой же
+        user = None
         
+        args = utils.get_args_raw(message)
+        reply = await message.get_reply_message()
+
+        if args:
+            try:
+                user = await self.client.get_entity(args)
+            except ValueError:
+                await utils.answer(message, "<b>Не удалось найти пользователя.</b>")
+                return
+
+        elif reply:
+            user = reply.sender
 
         if not user:
             return
@@ -30,5 +42,5 @@ class IDModule(loader.Module):
         
         await utils.answer(message, 
             f"<b>ID пользователя {user.first_name}: <code>{user.id}</code>\n"
-            f"<b>Аккаунт был создан:</b> <code>{created}</code>"
+            f"Аккаунт был создан: {created}</b>"
         )
