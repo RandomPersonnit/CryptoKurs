@@ -7,41 +7,8 @@ from telethon import events
 
 from .. import loader, utils
 
-
 @loader.tds
 class SendMessageModule(loader.Module):
-    """Получает текущий курс биткоина"""
-    currency = utils.get_args_raw(message)
-
-    if currency == "rub":
-        url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=rub'
-    elif currency == "usd":
-        url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
-    else:
-        text = "<b>Неверный формат валюты, используйте rub или usd</b>"
-        await utils.answer(message, text)
-        return
-
-    try:
-        response = requests.get(url)
-        data = response.json()
-
-        if 'bitcoin' in data:
-            if currency == "rub":
-                course = data['bitcoin']['rub']
-                text = f"<b>На данный момент, курс 1 BTC составляет </b><code>{course}₽</code>"
-            elif currency == "usd":
-                course = data['bitcoin']['usd']
-                text = f"<b>На данный момент, курс 1 BTC составляет </b><code>{course}$</code>"
-            else:
-                text = "<b>Неверный формат валюты, используйте rub или usd</b>"
-        else:
-            text = "<b>Не удалось получить данные о курсе биткоина</b>"
-    except Exception as e:
-        text = f"<b>Произошла ошибка при получении курса биткоина: {e}</b>"
-
-    await utils.answer(message, text)
-class IDModule(loader.Module):
     """Получает ID пользователя Telegram"""
 
     strings = {"name": "ID"}
@@ -72,4 +39,6 @@ class IDModule(loader.Module):
         if not user:
             return
 
-        await utils.answer(message, f"<b>ID пользователя {user.first_name}: <code>{user.id}</code></b>")
+        await utils.answer(message, f"<b>Пользователь:</b> <code>{user.first_name}</code>\n"
+                                  f"<b>@ Пользователя:</b> <code>{user.username}</code>\n"
+                                  f"<b>ID Пользователя:</b> <code>{user.id}</code>")
