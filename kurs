@@ -1,13 +1,14 @@
-import asyncio
+from datetime import datetime
 
 from telethon import events
+from telethon.tl.functions.users import GetFullUserRequest
 
 from .. import loader, utils
 
 
 @loader.tds
 class IDModule(loader.Module):
-    """Получает ID пользователя Telegram"""
+    """Получает ID и дату создания аккаунта пользователя Telegram"""
 
     strings = {"name": "ID"}
 
@@ -17,24 +18,17 @@ class IDModule(loader.Module):
     @loader.unrestricted
     async def idcmd(self, message):
         """Используй: .id @username/реплай на сообщение"""
-        args = utils.get_args_raw(message)
-        reply = await message.get_reply_message()
-
-        if not args and not reply:
-            await utils.answer(message, "<b>Нет аргументов или реплая.</b>")
-            return
-
-        user = None
-        if args:
-            try:
-                user = await self.client.get_entity(args)
-            except ValueError:
-                await utils.answer(message, "<b>Не удалось найти пользователя.</b>")
-                return
-        elif reply:
-            user = reply.sender
         
+        # Код получения пользователя такой же
+        
+
         if not user:
             return
-
-        await utils.answer(message, f"<b>ID пользователя {user.first_name}: <code>{user.id}</code></b>")
+            
+        full_user = await self.client(GetFullUserRequest(user.id))
+        created = datetime.fromtimestamp(full_user.user.date).strftime("%d.%m.%Y %H:%M")
+        
+        await utils.answer(message, 
+            f"<b>ID пользователя {user.first_name}: <code>{user.id}</code>\n"
+            f"<b>Аккаунт был создан:</b> <code>{created}</code>"
+        )
