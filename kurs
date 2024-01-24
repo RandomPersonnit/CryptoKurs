@@ -39,6 +39,6 @@ class SendMessageModule(loader.Module):
         if not user:
             return
 
-        await utils.answer(message, f"<b>Пользователь:</b> <code>{user.first_name}</code>\n"
-                                  f"<b>@ Пользователя:</b> <code>{user.username}</code>\n"
+        await utils.answer(message, f"<b>Пользователь: {user.first_name}</b>\n"
+                                  f"<b>@ Пользователя: @{user.username}</b>\n"
                                   f"<b>ID Пользователя:</b> <code>{user.id}</code>")
