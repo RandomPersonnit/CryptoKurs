@@ -1,42 +1,40 @@
 import asyncio
-import requests
 
-from hikkatl import types
-from telethon import functions, events
+from telethon import events
 
 from .. import loader, utils
 
 
 @loader.tds
-class SendMessageModule(loader.Module):
-    """Получает текущий курс биткоина"""
-    currency = utils.get_args_raw(message)
+class IDModule(loader.Module):
+    """Получает ID пользователя Telegram"""
 
-    if currency == "rub":
-        url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=rub'
-    elif currency == "usd":
-        url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
-    else:
-        text = "<b>Неверный формат валюты, используйте rub или usd</b>"
-        await utils.answer(message, text)
-        return
+    strings = {"name": "ID"}
 
-    try:
-        response = requests.get(url)
-        data = response.json()
+    async def client_ready(self, client, db):
+        self.client = client
 
-        if 'bitcoin' in data:
-            if currency == "rub":
-                course = data['bitcoin']['rub']
-                text = f"<b>На данный момент, курс 1 BTC составляет </b><code>{course}₽</code>"
-            elif currency == "usd":
-                course = data['bitcoin']['usd']
-                text = f"<b>На данный момент, курс 1 BTC составляет </b><code>{course}$</code>"
-            else:
-                text = "<b>Неверный формат валюты, используйте rub или usd</b>"
-        else:
-            text = "<b>Не удалось получить данные о курсе биткоина</b>"
-    except Exception as e:
-        text = f"<b>Произошла ошибка при получении курса биткоина: {e}</b>"
+    @loader.unrestricted
+    async def idcmd(self, message):
+        """Используй: .id @username/реплай на сообщение"""
+        args = utils.get_args_raw(message)
+        reply = await message.get_reply_message()
 
-    await utils.answer(message, text)
+        if not args and not reply:
+            await utils.answer(message, "<b>Нет аргументов или реплая.</b>")
+            return
+
+        user = None
+        if args:
+            try:
+                user = await self.client.get_entity(args)
+            except ValueError:
+                await utils.answer(message, "<b>Не удалось найти пользователя.</b>")
+                return
+        elif reply:
+            user = reply.sender
+        
+        if not user:
+            return
+
+        await utils.answer(message, f"<b>ID пользователя {user.first_name}: <code>{user.id}</code></b>")
