@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from telethon import events
+from telethon import events 
 from telethon.tl.functions.users import GetFullUserRequest
 
 from .. import loader, utils
@@ -8,39 +8,39 @@ from .. import loader, utils
 
 @loader.tds
 class IDModule(loader.Module):
-    """Получает ID и дату создания аккаунта пользователя Telegram"""
+  """Получает ID и дату создания аккаунта"""
 
-    strings = {"name": "ID"}
+  strings = {"name": "ID"}
 
-    async def client_ready(self, client, db):
-        self.client = client
+  async def client_ready(self, client, db):
+    self.client = client
 
-    @loader.unrestricted
-    async def idcmd(self, message):
-        """Используй: .id @username/реплай на сообщение"""
-        
-        user = None
-        
-        args = utils.get_args_raw(message)
-        reply = await message.get_reply_message()
+  @loader.unrestricted
+  async def idcmd(self, message):
+    """Используй: .id @username/реплай"""
 
-        if args:
-            try:
-                user = await self.client.get_entity(args)
-            except ValueError:
-                await utils.answer(message, "<b>Не удалось найти пользователя.</b>")
-                return
+    user = None
+    
+    args = utils.get_args_raw(message)
+    reply = await message.get_reply_message()
 
-        elif reply:
-            user = reply.sender
+    if args:
+      try:
+        user = await self.client.get_entity(args)
+      except ValueError:
+         await utils.answer(message, "<b>Не удалось найти пользователя.</b>")
+         return
 
-        if not user:
-            return
+    elif reply:
+      user = reply.sender
+
+    if not user:
+      return
             
-        full_user = await self.client(GetFullUserRequest(user.id))
-        created = datetime.fromtimestamp(full_user.user.date).strftime("%d.%m.%Y %H:%M")
-        
-        await utils.answer(message, 
-            f"<b>ID пользователя {user.first_name}: <code>{user.id}</code>\n"
-            f"Аккаунт был создан: {created}</b>"
-        )
+    full_user = await self.client(GetFullUserRequest(user.id))     
+    created = datetime.fromtimestamp(full_user.created).strftime("%d.%m.%Y %H:%M")
+    
+    await utils.answer(message,
+        f"<b>ID пользователя {user.first_name}: <code>{user.id}</code>\n" 
+        f"Аккаунт был создан: {created}</b>"
+    )
